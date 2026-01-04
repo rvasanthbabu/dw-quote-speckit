@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Get an instant dwelling insurance quote online. Calculate your home insurance premium in seconds." />
+    <title>Instant Dwelling Quote</title>
+  </head>
+  <body>
+    <noscript>
+      <div style="padding: 20px; text-align: center;">
+        <h1>Instant Dwelling Quote</h1>
+        <p>JavaScript is required for the best experience. Please enable JavaScript or use the form below.</p>
+        
+        <!-- Fallback form for no-JS users -->
+        <form action="/api/quote" method="POST" style="max-width: 500px; margin: 0 auto; text-align: left;">
+          <h2>Get Your Quote</h2>
+          
+          <label for="street">Street Address:</label>
+          <input type="text" id="street" name="address.street" required minlength="5" style="width: 100%; margin-bottom: 10px;" />
+          
+          <label for="city">City:</label>
+          <input type="text" id="city" name="address.city" required minlength="2" style="width: 100%; margin-bottom: 10px;" />
+          
+          <label for="state">State (2-letter code):</label>
+          <input type="text" id="state" name="address.state" required pattern="[A-Z]{2}" maxlength="2" style="width: 100%; margin-bottom: 10px;" />
+          
+          <label for="zipCode">Zip Code:</label>
+          <input type="text" id="zipCode" name="address.zipCode" required pattern="\\d{5}" maxlength="5" style="width: 100%; margin-bottom: 10px;" />
+          
+          <label for="squareFeet">Property Size (sq ft):</label>
+          <input type="number" id="squareFeet" name="squareFeet" required min="100" max="50000" style="width: 100%; margin-bottom: 10px;" />
+          
+          <label for="coverage">Coverage Amount ($):</label>
+          <input type="number" id="coverage" name="coverage" required min="50000" max="2000000" step="1000" style="width: 100%; margin-bottom: 10px;" />
+          
+          <button type="submit" style="width: 100%; padding: 10px; font-size: 16px;">Get Quote</button>
+        </form>
+      </div>
+    </noscript>
+    
+    <div id="root"></div>
+    <script type="module" src="/src/index.jsx"></script>
+  </body>
+</html>

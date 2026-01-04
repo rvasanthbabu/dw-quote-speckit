@@ -1,0 +1,21 @@
+{
+  "baseRatePerSqFt": 0.5,
+  "coverageMultipliers": {
+    "50000-100000": 0.8,
+    "100001-500000": 1.0,
+    "500001-1000000": 1.2,
+    "1000001-2000000": 1.5
+  },
+  "highValueThreshold": 5000,
+  "limits": {
+    "minPropertySize": 100,
+    "maxPropertySize": 50000,
+    "minCoverage": 50000,
+    "maxCoverage": 2000000
+  },
+  "contactInfo": {
+    "phone": "1-800-555-0100",
+    "email": "quotes@dwellinginsurance.com",
+    "message": "This property requires personalized assessment. Please contact us for a custom quote."
+  }
+}

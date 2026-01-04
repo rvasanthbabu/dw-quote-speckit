@@ -1,0 +1,44 @@
+{
+  "zipCodeRiskFactors": {
+    "78701": {
+      "risk": "low",
+      "multiplier": 1.0,
+      "description": "Low flood/fire risk area"
+    },
+    "78702": {
+      "risk": "medium",
+      "multiplier": 1.2,
+      "description": "Moderate risk area"
+    },
+    "90001": {
+      "risk": "high",
+      "multiplier": 1.5,
+      "description": "High risk area"
+    },
+    "33139": {
+      "risk": "high",
+      "multiplier": 1.8,
+      "description": "Hurricane-prone coastal area"
+    },
+    "10001": {
+      "risk": "medium",
+      "multiplier": 1.1,
+      "description": "Urban area with moderate risk"
+    },
+    "94102": {
+      "risk": "high",
+      "multiplier": 1.6,
+      "description": "Earthquake zone"
+    },
+    "60601": {
+      "risk": "low",
+      "multiplier": 0.9,
+      "description": "Low natural disaster risk"
+    }
+  },
+  "defaultRisk": {
+    "risk": "medium",
+    "multiplier": 1.2,
+    "description": "Default risk for unmapped zip codes"
+  }
+}

@@ -1,0 +1,365 @@
+openapi: 3.0.3
+info:
+  title: Dwelling Quote API
+  description: |
+    API for calculating instant dwelling insurance quotes based on property details.
+    
+    This API serves as a fallback for the client-side quote calculation when JavaScript 
+    is disabled or unavailable. The same calculation logic runs on both client and server.
+  version: 1.0.0
+  contact:
+    email: quotes@dwellinginsurance.com
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
+  - url: https://quote.dwellinginsurance.com/api
+    description: Production server
+
+tags:
+  - name: quotes
+    description: Quote calculation operations
+
+paths:
+  /quote:
+    post:
+      tags:
+        - quotes
+      summary: Calculate dwelling insurance quote
+      description: |
+        Calculates an instant insurance quote based on property details. 
+        
+        Returns either:
+        - Standard quote with annual premium amount (if under $5,000/year)
+        - Contact required message (if $5,000/year or higher)
+        
+        This endpoint performs the same calculation as the client-side JavaScript module.
+      operationId: calculateQuote
+      requestBody:
+        required: true
+        description: Property details for quote calculation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Property'
+            examples:
+              standardQuote:
+                summary: Standard property (low-value quote)
+                value:
+                  address:
+                    street: "123 Main St"
+                    city: "Austin"
+                    state: "TX"
+                    zipCode: "78701"
+                  squareFeet: 2000
+                  coverage: 300000
+              highValueProperty:
+                summary: Large property (triggers contact message)
+                value:
+                  address:
+                    street: "456 Estate Dr"
+                    city: "Beverly Hills"
+                    state: "CA"
+                    zipCode: "90210"
+                  squareFeet: 10000
+                  coverage: 2000000
+      responses:
+        '200':
+          description: Quote calculated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+              examples:
+                standardQuote:
+                  summary: Standard quote response
+                  value:
+                    property:
+                      address:
+                        street: "123 Main St"
+                        city: "Austin"
+                        state: "TX"
+                        zipCode: "78701"
+                      squareFeet: 2000
+                      coverage: 300000
+                    amount: 1200.00
+                    isHighValue: false
+                    breakdown:
+                      baseRate: 0.50
+                      riskMultiplier: 1.0
+                      coverageMultiplier: 1.0
+                      subtotal: 1000.00
+                      total: 1200.00
+                    timestamp: "2026-01-01T12:00:00.000Z"
+                    status: "standard"
+                highValueQuote:
+                  summary: High-value quote (contact required)
+                  value:
+                    property:
+                      address:
+                        street: "456 Estate Dr"
+                        city: "Beverly Hills"
+                        state: "CA"
+                        zipCode: "90210"
+                      squareFeet: 10000
+                      coverage: 2000000
+                    amount: 9000.00
+                    isHighValue: true
+                    breakdown:
+                      baseRate: 0.50
+                      riskMultiplier: 1.5
+                      coverageMultiplier: 1.2
+                      subtotal: 6000.00
+                      total: 9000.00
+                    timestamp: "2026-01-01T12:00:00.000Z"
+                    status: "contact_required"
+        '400':
+          description: Invalid input - validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidSquareFeet:
+                  summary: Property size out of range
+                  value:
+                    error: "Validation failed"
+                    message: "Property size must be between 100 and 50,000 square feet"
+                    code: "VALIDATION_ERROR"
+                    details:
+                      - field: "squareFeet"
+                        message: "Value 75 is below minimum 100"
+                        value: 75
+                invalidZipCode:
+                  summary: Invalid zip code format
+                  value:
+                    error: "Validation failed"
+                    message: "Zip code must be 5 digits"
+                    code: "VALIDATION_ERROR"
+                    details:
+                      - field: "address.zipCode"
+                        message: "Must match pattern ^\\d{5}$"
+                        value: "ABCDE"
+        '422':
+          description: Unprocessable entity - unsupported location
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                unsupportedLocation:
+                  summary: Location not covered
+                  value:
+                    error: "Unsupported location"
+                    message: "We currently don't provide coverage in this area. Contact us for more information."
+                    code: "UNSUPPORTED_LOCATION"
+                    details:
+                      - field: "address.zipCode"
+                        message: "Coverage not available for this zip code"
+                        value: "99999"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                serverError:
+                  summary: Calculation error
+                  value:
+                    error: "Internal server error"
+                    message: "Unable to calculate quote at this time. Please try again or contact us directly."
+                    code: "CALCULATION_ERROR"
+
+  /health:
+    get:
+      tags:
+        - health
+      summary: Health check endpoint
+      description: Returns server health status
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2026-01-01T12:00:00.000Z"
+
+components:
+  schemas:
+    PropertyAddress:
+      type: object
+      required:
+        - street
+        - city
+        - state
+        - zipCode
+      properties:
+        street:
+          type: string
+          minLength: 5
+          description: Street address
+          example: "123 Main St"
+        city:
+          type: string
+          minLength: 2
+          description: City name
+          example: "Austin"
+        state:
+          type: string
+          pattern: '^[A-Z]{2}$'
+          description: Two-letter US state code
+          example: "TX"
+        zipCode:
+          type: string
+          pattern: '^\d{5}$'
+          description: Five-digit US zip code
+          example: "78701"
+
+    Property:
+      type: object
+      required:
+        - address
+        - squareFeet
+        - coverage
+      properties:
+        address:
+          $ref: '#/components/schemas/PropertyAddress'
+        squareFeet:
+          type: integer
+          minimum: 100
+          maximum: 50000
+          description: Property size in square feet
+          example: 2000
+        coverage:
+          type: number
+          minimum: 50000
+          maximum: 2000000
+          description: Desired coverage amount in dollars
+          example: 300000
+
+    QuoteBreakdown:
+      type: object
+      required:
+        - baseRate
+        - riskMultiplier
+        - coverageMultiplier
+        - subtotal
+        - total
+      properties:
+        baseRate:
+          type: number
+          description: Base rate per square foot
+          example: 0.50
+        riskMultiplier:
+          type: number
+          description: Location risk adjustment factor
+          example: 1.0
+        coverageMultiplier:
+          type: number
+          description: Coverage tier adjustment factor
+          example: 1.0
+        subtotal:
+          type: number
+          description: Cost before risk adjustment
+          example: 1000.00
+        total:
+          type: number
+          description: Final calculated amount
+          example: 1200.00
+
+    Quote:
+      type: object
+      required:
+        - property
+        - amount
+        - isHighValue
+        - breakdown
+        - timestamp
+        - status
+      properties:
+        property:
+          $ref: '#/components/schemas/Property'
+          description: Input property details used for calculation
+        amount:
+          type: number
+          minimum: 0
+          description: Annual premium in dollars
+          example: 1200.00
+        isHighValue:
+          type: boolean
+          description: True if amount exceeds high-value threshold ($5,000)
+          example: false
+        breakdown:
+          $ref: '#/components/schemas/QuoteBreakdown'
+          description: Detailed calculation breakdown
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp of quote calculation
+          example: "2026-01-01T12:00:00.000Z"
+        status:
+          type: string
+          enum:
+            - standard
+            - contact_required
+          description: |
+            Quote status:
+            - standard: Show quote amount to user
+            - contact_required: Show contact message (high-value property)
+          example: "standard"
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+        - code
+      properties:
+        error:
+          type: string
+          description: Error type
+          example: "Validation failed"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Property size must be between 100 and 50,000 square feet"
+        code:
+          type: string
+          description: Machine-readable error code
+          example: "VALIDATION_ERROR"
+          enum:
+            - VALIDATION_ERROR
+            - UNSUPPORTED_LOCATION
+            - CALCULATION_ERROR
+            - INTERNAL_ERROR
+        details:
+          type: array
+          description: Additional error details (validation errors)
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                description: Field that failed validation
+                example: "squareFeet"
+              message:
+                type: string
+                description: Field-specific error message
+                example: "Value 75 is below minimum 100"
+              value:
+                description: Invalid value provided
+                example: 75
+
+  securitySchemes: {}
+
+security: []

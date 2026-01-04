@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Missing street address",
+    "address": {
+      "street": "",
+      "city": "Austin",
+      "state": "TX",
+      "zipCode": "78701"
+    },
+    "squareFeet": 2000,
+    "coverage": 300000,
+    "expectedError": "Street address is required"
+  },
+  {
+    "name": "Invalid state code",
+    "address": {
+      "street": "123 Main St",
+      "city": "Austin",
+      "state": "Texas",
+      "zipCode": "78701"
+    },
+    "squareFeet": 2000,
+    "coverage": 300000,
+    "expectedError": "State must be 2-letter code"
+  },
+  {
+    "name": "Invalid zip code",
+    "address": {
+      "street": "123 Main St",
+      "city": "Austin",
+      "state": "TX",
+      "zipCode": "1234"
+    },
+    "squareFeet": 2000,
+    "coverage": 300000,
+    "expectedError": "Zip code must be 5 digits"
+  },
+  {
+    "name": "Property size too small",
+    "address": {
+      "street": "123 Main St",
+      "city": "Austin",
+      "state": "TX",
+      "zipCode": "78701"
+    },
+    "squareFeet": 50,
+    "coverage": 300000,
+    "expectedError": "Property size must be between 100 and 50,000"
+  },
+  {
+    "name": "Property size too large",
+    "address": {
+      "street": "123 Main St",
+      "city": "Austin",
+      "state": "TX",
+      "zipCode": "78701"
+    },
+    "squareFeet": 60000,
+    "coverage": 300000,
+    "expectedError": "Property size must be between 100 and 50,000"
+  },
+  {
+    "name": "Coverage amount too low",
+    "address": {
+      "street": "123 Main St",
+      "city": "Austin",
+      "state": "TX",
+      "zipCode": "78701"
+    },
+    "squareFeet": 2000,
+    "coverage": 25000,
+    "expectedError": "Coverage amount must be between $50,000 and $2,000,000"
+  },
+  {
+    "name": "Coverage amount too high",
+    "address": {
+      "street": "123 Main St",
+      "city": "Austin",
+      "state": "TX",
+      "zipCode": "78701"
+    },
+    "squareFeet": 2000,
+    "coverage": 3000000,
+    "expectedError": "Coverage amount must be between $50,000 and $2,000,000"
+  }
+]

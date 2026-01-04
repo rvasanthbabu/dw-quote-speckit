@@ -1,0 +1,46 @@
+[
+  {
+    "name": "Standard property in low-risk area",
+    "address": {
+      "street": "123 Main St",
+      "city": "Austin",
+      "state": "TX",
+      "zipCode": "78701"
+    },
+    "squareFeet": 2000,
+    "coverage": 300000
+  },
+  {
+    "name": "Large property with high coverage",
+    "address": {
+      "street": "456 Oak Avenue",
+      "city": "Los Angeles",
+      "state": "CA",
+      "zipCode": "90001"
+    },
+    "squareFeet": 5000,
+    "coverage": 1500000
+  },
+  {
+    "name": "Small property with minimum coverage",
+    "address": {
+      "street": "789 Pine Street",
+      "city": "Chicago",
+      "state": "IL",
+      "zipCode": "60601"
+    },
+    "squareFeet": 800,
+    "coverage": 100000
+  },
+  {
+    "name": "Property in hurricane-prone area",
+    "address": {
+      "street": "321 Beach Blvd",
+      "city": "Miami Beach",
+      "state": "FL",
+      "zipCode": "33139"
+    },
+    "squareFeet": 3000,
+    "coverage": 800000
+  }
+]
